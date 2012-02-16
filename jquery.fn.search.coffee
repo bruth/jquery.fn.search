@@ -1,9 +1,15 @@
 #
 # jQuery.fn.search
-# (c) 2011 Byron Ruth
-# This jQuery plugin may be freely distributed under the BSD license
+# (c) 2011 Byron Ruth <b@devel.io>
+# License: See LICENSE file
 # Version: 0.1
 # Date: February 16, 2012
+#
+# Text highlighting code originally conceived by:
+#
+# jQuery.fn.highlight
+# (c) 2009 Johann Burkard <jb@eaio.com>
+# MIT License
 #
 
 ((factory) ->
