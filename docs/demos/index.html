@@ -92,6 +92,8 @@ var input = $('input').on('keyup', function() {
 <pre class="prettyprint linenums">
 // Initialize search
 var imgs = $('img').search({
+    // Hide non-matched elements, rather than fade out
+    effect: 'hide',
     highlight: false,
     // Standard filter function, but receives the search pattern as the first
     // argument. The default filter function is 'text' (see above) which pattern
@@ -116,15 +118,12 @@ var input = $('input').on('keyup', function() {
                 </form>
 
                 <div class="row contents">
-                    <div class=span6>
+                    <div class=span12>
                         <img src=chords/chord_amin95.gif data-search=Amin9>
                         <img src=chords/chord_amin96.gif data-search=Amin9>
                         <img src=chords/chord_asus2_open.gif data-search=Asus2>
                         <img src=chords/chord_b55.gif data-search=B5>
                         <img src=chords/chord_cmin95.gif data-search=Cmin9>
-                    </div>
-
-                    <div class=span6>
                         <img src=chords/chord_d7sus2_open.gif data-search=D7sus2>
                         <img src=chords/chord_dmaj7_open.gif data-search=Dmaj7>
                         <img src=chords/chord_e9_open.gif data-search=E9>
@@ -177,6 +176,7 @@ var input = $('input').on('keyup', function() {
                 }, '#main-search');
                 setupDemo('.contents p', '#demo1');
                 setupDemo('.contents img', '#demo2', {
+                    effect: 'hide',
                     highlight: false,
                     filter: function(q) {
                         var metadata = $(this).data('search');
