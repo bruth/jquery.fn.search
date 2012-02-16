@@ -7,29 +7,24 @@
     <body>
         <div id=search-options>
             <form class="form-inline container">
-                <label>Search <input id=search type=text value=lorem></label>
-                <label>Highlight <input id=highlight checked type=checkbox></label>
+                <label>Search <input id=search type=text value=min></label>
+                <label>Highlight <input id=highlight type=checkbox></label>
                 <label>Fade <input id=fade checked type=checkbox></label>
                 <label>Hide <input id=hide type=checkbox></label>
             </form>
         </div>
 
         <div class=container>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla magna diam, mattis nec adipiscing vel, auctor eleifend felis. Mauris cursus erat sollicitudin metus feugiat eget ullamcorper felis vestibulum.</p>
-
-            <p>Phasellus lobortis sollicitudin diam quis tempus. Proin egestas vehicula sem a elementum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed faucibus porta odio id vehicula. Curabitur suscipit, lorem sit amet condimentum tincidunt, libero ipsum malesuada leo, ultrices mollis libero tellus nec ante.</p>
-
-            <p>Quisque lacinia facilisis mollis.</p>
-
-            <p>Sed nec lacus ut ante interdum cursus non sit amet risus. Curabitur id neque ac lorem accumsan rutrum. Donec mi tortor, viverra sit amet lacinia nec, bibendum a augue.</p>
-
-            <p>Nulla facilisis, neque placerat tempor bibendum, ligula lectus pharetra purus, eget porttitor quam eros et ipsum. Nunc eu metus nisl.</p>
-
-            <p>Cras nisl elit, laoreet et luctus non, ultricies quis magna. Phasellus consectetur magna id dui sagittis et laoreet elit adipiscing.</p>
-
-            <p>Phasellus lobortis gravida diam quis lobortis. Nunc nec convallis libero. Etiam vel velit arcu, vel ullamcorper urna. Praesent posuere justo in justo aliquet id dignissim purus vulputate. Ut leo nisl, venenatis vel dictum in, eleifend at justo. Etiam cursus, mauris at cursus sodales, dolor erat ullamcorper neque, non blandit lacus nibh a felis. Quisque et arcu eu velit blandit porttitor.</p>
+            <img src=chords/chord_amin95.gif data-search=Amin9>
+            <img src=chords/chord_amin96.gif data-search=Amin9>
+            <img src=chords/chord_asus2_open.gif data-search=Asus2>
+            <img src=chords/chord_b55.gif data-search=B5>
+            <img src=chords/chord_cmin95.gif data-search=Cmin9>
+            <img src=chords/chord_d7sus2_open.gif data-search=D7sus2>
+            <img src=chords/chord_dmaj7_open.gif data-search=Dmaj7>
+            <img src=chords/chord_e9_open.gif data-search=E9>
+            <img src=chords/chord_eb7sus45.gif data-search=Eb7sus4>
+            <img src=chords/chord_fmaj66.gif data-search=F6>
         </div>
 
         <script src=jquery.js></script>
@@ -41,7 +36,7 @@
 
                 var hits = $(),
                     misses = $(),
-                    elems = $('p');
+                    elems = $('img');
 
                 var fader = $('#fade'),
                     hider = $('#hide'),
@@ -59,7 +54,10 @@
 
                     // Ensure it's not empty
                     if (!!newValue) {
-                        hits = elems.filter(':regex(' + search.val() + ')');
+                        hits = elems.filter(function(idx) {
+                            var metadata = $(this).data('search');
+                            return metadata && metadata.search(new RegExp(newValue, 'ig')) >= 0;
+                        });
                         misses = elems.not(hits);
                     } else {
                         hits = $();

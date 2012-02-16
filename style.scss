@@ -1,0 +1,29 @@
+@import "bourbon/bourbon";
+
+#search-options {
+    background-color: #eee;
+    padding: 7px 0;
+    text-shadow: 0 0 1px #fff;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+
+    form {
+        margin: 0 auto;
+    }
+
+    label { margin-bottom: 0; margin-right: 10px; }
+    input { margin-top: 0; }
+}
+
+p {
+    width: 400px;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+.highlight {
+    @include box-shadow(0 0 1px #ecec37, 0 2px 3px #eee);
+    @include border-radius(5px);
+    background-color: #fefc7f;
+}
+
