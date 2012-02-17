@@ -168,7 +168,6 @@
 
     defaultOptions =
         effect: 'fade' # fade, hide, [], <object>
-        fadeTo: 0.3
         highlight: true
         highlightClass: 'highlight'
         filter: 'text' # text, function

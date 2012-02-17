@@ -17,12 +17,12 @@ body {
   font-size: 14px;
   padding-top: 40px; }
 
+h3 {
+  font-weight: 200; }
+
 p {
   font-size: 14px;
   line-height: 22px; }
-
-h1, h2, h3, h4, h5, h6 {
-  font-weight: normal; }
 
 .navbar {
   box-shadow: 0 2px 3px #ccc; }
@@ -36,16 +36,16 @@ header {
     color: gray; }
 
 #content {
-  -webkit-box-shadow: -3px 0 5px #cccccc;
-  -moz-box-shadow: -3px 0 5px #cccccc;
-  -ms-box-shadow: -3px 0 5px #cccccc;
-  -o-box-shadow: -3px 0 5px #cccccc;
-  box-shadow: -3px 0 5px #cccccc;
+  -webkit-box-shadow: -2px 0 3px #cccccc;
+  -moz-box-shadow: -2px 0 3px #cccccc;
+  -ms-box-shadow: -2px 0 3px #cccccc;
+  -o-box-shadow: -2px 0 3px #cccccc;
+  box-shadow: -2px 0 3px #cccccc;
   background-color: #fff;
   border-left: 1px solid #ccc;
   padding: 0 20px;
   position: fixed;
-  left: 240px;
+  left: 200px;
   right: 0;
   top: 40px;
   bottom: 0;
@@ -63,7 +63,7 @@ span.label {
   top: 40px;
   bottom: 0;
   left: 0;
-  width: 240px;
+  width: 200px;
   padding-top: 10px;
   padding-left: 20px;
   overflow: auto; }

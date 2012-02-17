@@ -28,8 +28,11 @@
                 <div class=container-fluid>
                     <a class=brand href=../>jQuery.fn.search <span style="font-size: 15px; color: #999">0.1 Alpha</span></a>
                     <ul class=nav>
-                        <li><a href="https://github.com/bruth/jquery.fn.search/">GitHub Repository</a>
+                        <li><a href=../>Docs</a>
+                        <li class=active><a href=./>Demos</a>
+                        <li><a href=https://github.com/bruth/jquery.fn.search/>GitHub</a>
                     </ul>
+
                     <form class="navbar-search pull-right">
                         <input id=main-search type=text class=search-query placeholder="search demos..">
                     </form>
@@ -40,97 +43,13 @@
         <div class=container-fluid>
 
             <div id=demo1 class=demo>
-                <hgroup>
-                    <h3>Text Node Pattern Matching <a class=code-toggle href=#>Show Code</a></h3>
-
-<pre class="prettyprint linenums">
-// Initialize the search feature
-var paras = $('p').search();
-
-// Searches can be performed programmatically..
-paras.search('search', 'lorem');
-
-// For this example, a 'keyup' event handler is bound to the text input which
-// takes it's value and calls the above command.
-var input = $('input').on('keyup', function() {
-    paras.search('search', input.val());
-});
-</pre>
-
-                <hr>
-
-                <form class=inline-form>
-                    <input type=text class=search value=lorem placeholder=search>
-                </form>
-
-                <div class="row contents">
-                    <div class=span6>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla magna diam, mattis nec adipiscing vel, auctor eleifend felis. Mauris cursus erat sollicitudin metus feugiat eget ullamcorper felis vestibulum.</p>
-
-                        <p>Phasellus lobortis sollicitudin diam quis tempus. Proin egestas vehicula sem a elementum.</p>
-
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed faucibus porta odio id vehicula. Curabitur suscipit, lorem sit amet condimentum tincidunt, libero ipsum malesuada leo, ultrices mollis libero tellus nec ante.</p>
-
-                        <p>Quisque lacinia facilisis mollis.</p>
-                    </div>
-
-                    <div class=span6>
-                        <p>Sed nec lacus ut ante interdum cursus non sit amet risus. Curabitur id neque ac lorem accumsan rutrum. Donec mi tortor, viverra sit amet lacinia nec, bibendum a augue.</p>
-
-                        <p>Nulla facilisis, neque placerat tempor bibendum, ligula lectus pharetra purus, eget porttitor quam eros et ipsum. Nunc eu metus nisl.</p>
-
-                        <p>Cras nisl elit, laoreet et luctus non, ultricies quis magna. Phasellus consectetur magna id dui sagittis et laoreet elit adipiscing.</p>
-
-                        <p>Phasellus lobortis gravida diam quis lobortis. Nunc nec convallis libero. Etiam vel velit arcu, vel ullamcorper urna. Praesent posuere justo in justo aliquet id dignissim purus vulputate. Ut leo nisl, venenatis vel dictum in, eleifend at justo. Etiam cursus, mauris at cursus sodales, dolor erat ullamcorper neque, non blandit lacus nibh a felis. Quisque et arcu eu velit blandit porttitor.</p>
-                    </div>
-                </div>
+                <h3>Text Node Pattern Matching</h3>
+                <iframe style="width: 100%; height: 420px" src="http://jsfiddle.net/bruth/77QEK/embedded/result,js,html/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
             </div>
 
             <div id=demo2 class=demo>
-                <h3>Attribute Pattern Matching <a class=code-toggle href=#>Show Code</a></h3>
-
-<pre class="prettyprint linenums">
-// Initialize search
-var imgs = $('img').search({
-    // Hide non-matched elements, rather than fade out
-    effect: 'hide',
-    highlight: false,
-    // Standard filter function, but receives the search pattern as the first
-    // argument. The default filter function is 'text' (see above) which pattern
-    // matches against the element's child text nodes.
-    filter: function(pattern, idx) {
-        // use the `data-search` attribute of the &lt;img /&gt; element
-        var metadata = $(this).data('search');
-        return metadata &amp;&amp; metadata.search(new RegExp(pattern, 'ig')) &gt;= 0;
-    }
-});
-
-// Same as the above example, a 'keyup' event handler is bound to the text input
-// which takes it's value and calls the above command.
-var input = $('input').on('keyup', function() {
-    imgs.search('search', input.val());
-});
-</pre>
-                <hr>
-
-                <form class=inline-form>
-                    <input type=text class=search placeholder=search>
-                </form>
-
-                <div class="row contents">
-                    <div class=span12>
-                        <img src=chords/chord_amin95.gif data-search=Amin9>
-                        <img src=chords/chord_amin96.gif data-search=Amin9>
-                        <img src=chords/chord_asus2_open.gif data-search=Asus2>
-                        <img src=chords/chord_b55.gif data-search=B5>
-                        <img src=chords/chord_cmin95.gif data-search=Cmin9>
-                        <img src=chords/chord_d7sus2_open.gif data-search=D7sus2>
-                        <img src=chords/chord_dmaj7_open.gif data-search=Dmaj7>
-                        <img src=chords/chord_e9_open.gif data-search=E9>
-                        <img src=chords/chord_eb7sus45.gif data-search=Eb7sus4>
-                        <img src=chords/chord_fmaj66.gif data-search=F6>
-                    </div>
-                </div>
+                <h3>Attribute Pattern Matching</h3>
+                <iframe style="width: 100%; height: 530px" src="http://jsfiddle.net/bruth/ggGhW/embedded/result,js,html/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
             </div>
         </div>
 
@@ -141,49 +60,15 @@ var input = $('input').on('keyup', function() {
 
         <script>
             $(function() {
-                $('.code-toggle').each(function() {
-                    var a = $(this).on('click', function() {
-                        a.parent().siblings('.prettyprint').slideDown();
-                        a.remove();
-                        return false;
+                var search = $('#main-search'),
+                    demos = $('.demo').search({
+                        effect: 'hide',
+                        matchOn: 'h3'
                     });
-                });
 
-                function setupDemo(selector, context, options, searchInput) {
-                    searchInput = searchInput || '.search';
-                    var search = $(searchInput, context),
-                        target = $(selector, context).search(options);
-
-                        var newValue, lastValue = null;
-                        function searchHandler() {
-                            newValue = search.val();
-                            // Nothing changed..
-                            if (newValue === lastValue) return;
-                            // Update last value
-                            lastValue = newValue;
-
-                            target.search('search', newValue);
-                        }
-
-                    search.on('keyup', searchHandler);
-                    // on load
-                    searchHandler();
-                }
-
-                setupDemo('.demo', null, {
-                    effect: 'hide',
-                    matchOn: 'h3'
-                }, '#main-search');
-                setupDemo('.contents p', '#demo1');
-                setupDemo('.contents img', '#demo2', {
-                    effect: 'hide',
-                    highlight: false,
-                    filter: function(q) {
-                        var metadata = $(this).data('search');
-                        return metadata && metadata.search(new RegExp(q, 'ig')) >= 0;
-                    }
-                });
-
+                search.on('keyup', function() {
+                    demos.search('search', search.val());
+                }).trigger('keyup');
             });
         </script>
     </body>

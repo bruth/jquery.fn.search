@@ -17,10 +17,11 @@
         <div class="navbar navbar-fixed-top">
             <div class=navbar-inner>
                 <div class=container-fluid>
-                    <a class=brand href=../>jQuery.fn.search <span style="font-size: 15px; color: #999">0.1 Alpha</span></a>
+                    <a class=brand href=./>jQuery.fn.search <span style="font-size: 15px; color: #999">0.1 Alpha</span></a>
                     <ul class=nav>
-                        <li><a href=https://github.com/bruth/jquery.fn.search/>GitHub</a>
+                        <li class=active><a href=./>Docs</a>
                         <li><a href=demos/>Demos</a>
+                        <li><a href=https://github.com/bruth/jquery.fn.search/>GitHub</a>
                     </ul>
                     <form class="navbar-search pull-right">
                         <input id=main-search type=text class=search-query placeholder="search docs">
@@ -30,15 +31,16 @@
         </div>
 
         <nav id=sidebar>
+            <h3><a href=#wat>WAT!</a></h3>
             <h3><a href=#get-started>Get Started</a></h3>
-            <ul class=unstyled>
+            <ul>
                 <li><a href=#dependencies>Dependencies</a>
                 <li><a href=#download>Download</a>
                 <li><a href=#umd>UMD</a>
              </ul>
         </nav>
 
-        <div id=content>
+        <div id=content class=container-fluid>
 
             <header>
                 <hgroup>
@@ -49,52 +51,74 @@
 
             <hr>
 
-            <h2 id=get-started>Get Started</h2>
+            <section>
+                <h2>WAT! <small>(that's what all the cool kids say)</small></h2>
 
-            <section class=row>
-                <span class=span12>
-                </span>
+                <p>Google make search easy and <em>fast</em>. That gets me to the web page
+                of interest, but now I have to scan the whole page to find what I was
+                <em>really</em> looking for.</p>
+                <p>What would be really great is if I could find what I was looking for
+                quickly use a in-page search (not unlike what <code>cmd+f</code> provides).
+                But not just text, I want to find relevant images, sections of text, documents
+                or whatever.</p>
+
+                <p>I talking about metadata. Metadata exists as text nodes, attribute data,
+                URLs and <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/microdata.html>microdata</a>.
+                This plugin allows for taking advantage of common sources of metadata.</p>
+
+                <hr>
             </section>
 
-            <h3 id=dependencies>Dependencies</h3>
+            <section>
+                <h2 id=get-started>Get Started</h2>
 
-            <section class=row>
-                <span class=span12>
-                    <ul>
-                        <li><a href=http://www.jquery.com>jQuery 1.7+</a>
-                    </ul>
-                </span>
-            </section>
-
-            <h3 id=download>Download</h3>
-
-            <section class=row>
-                <span class=span12>
-                    <div class="alert alert-block">
-                        <h4>No Official Release Yet!</h4>
-                        These are links to the master branch builds.
+                <div class=row>
+                    <div class=span10>
                     </div>
+                </div>
 
-                    <p><em>Right-click and save-as</em></p>
-                    <ul>
-                        <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.js>Development Version (0.1)</a> - 5.8K
-                        <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.min.js>Production Version (0.1)</a> - 1.2K minified, gzipped
-                    </ul>
+                <h3 id=dependencies>Dependencies</h3>
 
-                </span>
+                <div class=row>
+                    <div class=span10>
+                        <ul>
+                            <li><a href=http://jquery.com>jQuery 1.2.3+</a>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 id=download>Download</h3>
+
+                <div class=row>
+                    <div class=span10>
+
+                        <div class="alert alert-block">
+                            <h4 class=alert-heading>No Official Release Yet!</h4>
+                            These are links to the master branch builds.
+                        </div>
+
+                        <p><em>Right-click and save-as</em></p>
+                        <ul>
+                            <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.js>Development Version (0.1)</a> - 5.8K
+                            <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.min.js>Production Version (0.1)</a> - 1.2K minified, gzipped
+                        </ul>
+
+                    </div>
+                </div>
+
+                <h3 id=umd>Universal Module Definition (UMD)</h3>
+
+                <div class=row>
+                    <div class=span10>
+                        <p>This plugin supports the <a href=https://github.com/umdjs/umd>UMD</a>. It
+                        can load in the CommonJS/Node environment, via AMD in the browser or as
+                        a traditional script.</p>
+                    </div>
+                </div>
+
+                <hr>
             </section>
 
-            <h3 id=umd>Universal Module Definition (UMD)</h3>
-
-            <section class="row">
-                <span class="span16">
-                    <p>This plugin supports the <a href=https://github.com/umdjs/umd>UMD</a>. It
-                    can load in the CommonJS/Node environment, via AMD in the browser or as
-                    a traditional script.</p>
-                </span> 
-            </section>
-
-            <hr>
 
         </div>
 
@@ -108,23 +132,14 @@
             $(function() {
 
                 var search = $('#main-search'),
-                target = $('#content > *').search();
+                    sections = $('#content > section').search({
+                        effect: 'hide',
+                        matchOn: '> *'
+                    });
 
-                    var newValue, lastValue = null;
-                    function searchHandler() {
-                        newValue = search.val();
-                        // Nothing changed..
-                        if (newValue === lastValue) return;
-                        // Update last value
-                        lastValue = newValue;
-
-                        target.search('search', newValue);
-                    }
-
-                search.on('keyup', searchHandler);
-                // on load
-                searchHandler();
-
+                search.on('keyup', function() {
+                    sections.search('search', search.val());
+                }).keyup();
             });
 
         </script>
