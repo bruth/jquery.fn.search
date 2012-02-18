@@ -227,10 +227,9 @@ $('p').search({
 // Use a custom function for images.. there is no inner text to
 // search, so we rely on attribute metadata
 $('img').search({
-    filter: function(pattern, index) {
+    filter: function(pattern, regexp, index) {
         // get the contents of the data-search attribute on the element
-        var keywords = $(this).data('search'),
-            regexp = new RegExp(pattern, 'ig');
+        var keywords = $(this).data('search');
         // case insensitive match on the search keywords
         return meta &amp;&amp; meta.search(regexp) &gt;= 0;
     }
