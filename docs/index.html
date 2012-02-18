@@ -231,7 +231,7 @@ $('img').search({
         // get the contents of the data-search attribute on the element
         var keywords = $(this).data('search');
         // case insensitive match on the search keywords
-        return meta &amp;&amp; meta.search(regexp) &gt;= 0;
+        return keywords &amp;&amp; keywords.search(regexp) &gt;= 0;
     }
 });
 </pre>
