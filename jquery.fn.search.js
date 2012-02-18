@@ -9,38 +9,116 @@ var __slice = Array.prototype.slice;
     return factory(jQuery);
   }
 })(function($) {
-  var Commands, DATA_KEY, Effects, Filters, defaultOptions, highlightText, removeHighlight;
-  highlightText = function(obj, pattern, className) {
-    var innerHighlight, regex;
-    if (className == null) className = 'highlight';
-    innerHighlight = function(node, pattern) {
-      var endBit, i, match, middleBit, middleClone, pos, skip, spanNode;
-      skip = 0;
-      if (node.nodeType === 3) {
-        pos = node.data.search(regex);
-        if (pos >= 0 && node.data.length > 0) {
-          match = node.data.match(regex);
-          spanNode = document.createElement('span');
-          spanNode.className = className;
-          middleBit = node.splitText(pos);
-          endBit = middleBit.splitText(match[0].length);
-          middleClone = middleBit.cloneNode(true);
-          spanNode.appendChild(middleClone);
-          middleBit.parentNode.replaceChild(spanNode, middleBit);
-          skip = 1;
+  var CACHE_KEY, Effects, Filters, defaultOptions, highlightText, innerHighlight, isArray, isFunction, isObject, isRegExp, isString, performSearch, removeHighlight, setupOptions, toString;
+  CACHE_KEY = 'jquery.fn.search';
+  toString = Object.prototype.toString;
+  isArray = $.isArray;
+  isFunction = $.isFunction;
+  isObject = function(obj) {
+    return obj === Object(obj);
+  };
+  isRegExp = function(obj) {
+    return toString.call(obj) === '[object RegExp]';
+  };
+  isString = function(obj) {
+    return toString.call(obj) === '[object String]';
+  };
+  Filters = {
+    text: function(pattern, regexp) {
+      return $(this).text().search(regexp) >= 0;
+    }
+  };
+  Effects = {
+    highlight: {
+      on: function(hits, misses, pattern, regexp, options) {
+        var context, p, _i, _len, _results;
+        if (pattern) {
+          context = hits;
+          if (options.filterOn) context = hits.find(options.filterOn);
+          if (isArray(pattern)) {
+            _results = [];
+            for (_i = 0, _len = pattern.length; _i < _len; _i++) {
+              p = pattern[_i];
+              _results.push(highlightText(context, p, options.highlightClass));
+            }
+            return _results;
+          } else {
+            return highlightText(context, pattern, options.highlightClass);
+          }
         }
-      } else if (node.nodeType === 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
-        i = 0;
-        while (i < node.childNodes.length) {
-          i += innerHighlight(node.childNodes[i], pattern);
-          i++;
+      },
+      off: function(hits, misses, pattern, regexp, options) {
+        var context;
+        if (pattern) {
+          context = hits;
+          if (options.filterOn) context = hits.find(options.filterOn);
+          return removeHighlight(context, options.highlightClass);
         }
       }
-      return skip;
-    };
-    regex = (typeof pattern === 'string' ? new RegExp(pattern, 'i') : pattern);
+    },
+    fade: {
+      on: function(hits, misses, pattern, regexp, options) {
+        var rootElement;
+        misses.css({
+          opacity: options.fadeOpacity
+        });
+        rootElement = this.parent();
+        return hits.each(function(index) {
+          return $(this).parentsUntil(rootElement).css({
+            opacity: 1
+          });
+        });
+      },
+      off: function() {
+        return this.css({
+          opacity: 1
+        });
+      }
+    },
+    hide: {
+      on: function(hits, misses) {
+        var rootElement;
+        misses.hide();
+        rootElement = this.parent();
+        return hits.each(function(index) {
+          return $(this).parentsUntil(rootElement).show();
+        });
+      },
+      off: function() {
+        return this.show();
+      }
+    }
+  };
+  innerHighlight = function(node, pattern, regexp, className) {
+    var endBit, i, match, middleBit, middleClone, pos, skip, spanNode;
+    skip = 0;
+    if (node.nodeType === 3) {
+      pos = node.data.search(regexp);
+      if (pos >= 0 && node.data.length > 0) {
+        match = node.data.match(regexp);
+        spanNode = document.createElement('span');
+        spanNode.className = className;
+        middleBit = node.splitText(pos);
+        endBit = middleBit.splitText(match[0].length);
+        middleClone = middleBit.cloneNode(true);
+        spanNode.appendChild(middleClone);
+        middleBit.parentNode.replaceChild(spanNode, middleBit);
+        skip = 1;
+      }
+    } else if (node.nodeType === 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
+      i = 0;
+      while (i < node.childNodes.length) {
+        i += innerHighlight(node.childNodes[i], pattern, regexp, className);
+        i++;
+      }
+    }
+    return skip;
+  };
+  highlightText = function(obj, pattern, className) {
+    var regexp;
+    regexp = new RegExp(pattern, 'i');
     return obj.each(function() {
-      return innerHighlight(this, pattern);
+      return innerHighlight(this, pattern, regexp, className);
     });
   };
   removeHighlight = function(obj, className) {
@@ -51,132 +129,108 @@ var __slice = Array.prototype.slice;
       return parent.normalize();
     }).end();
   };
-  Effects = {
-    fade: {
-      on: function(hits, misses, pattern) {
-        return misses.css({
-          opacity: 0.3
-        });
-      },
-      off: function(hits, misses) {
-        return this.css({
-          opacity: 1
-        });
-      }
-    },
-    hide: {
-      on: function(hits, misses, pattern) {
-        return misses.hide();
-      },
-      off: function(hits, misses) {
-        return this.show();
-      }
-    }
-  };
-  Commands = {
-    effect: function(state, effect) {
-      return $.extend(Effects, effect);
-    },
-    enable: function(state) {
-      if (!state.enabled) {
-        highlight(state.hits);
-        return state.enabled = true;
-      }
-    },
-    disable: function(state) {
-      if (state.enabled) {
-        removeHighlight(state.hits);
-        return state.enabled = false;
-      }
-    },
-    search: function(state, pattern) {
-      var context, effect, filter, highlight, highlightClass, key, options;
-      options = state.options;
-      if (typeof (filter = options.filter) === 'string') filter = Filters[filter];
-      effect = null;
-      highlight = options.highlight;
-      highlightClass = options.highlightClass;
-      if (typeof (key = options.effect) === 'string') {
-        effect = Effects[key];
-      } else if (typeof $.isArray(key)) {
-        effect = {
-          on: function() {
-            var args, e, _i, _len, _ref;
-            args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-            for (_i = 0, _len = key.length; _i < _len; _i++) {
-              e = key[_i];
-              (_ref = Effects[e]).on.apply(_ref, args);
-            }
-          },
-          off: function() {
-            var args, e, _i, _len, _ref;
-            args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-            for (_i = 0, _len = key.length; _i < _len; _i++) {
-              e = key[_i];
-              (_ref = Effects[e]).off.apply(_ref, args);
-            }
-          }
-        };
-      } else if (typeof key === 'object') {
-        effect = key;
-      }
-      if (effect) effect.off.call(this, state.hits, state.misses);
-      if (highlight) {
-        context = state.hits;
-        if (options.matchOn) context = state.hits.find(options.matchOn);
-        removeHighlight(context, highlightClass);
-      }
-      if (pattern) {
-        state.hits = this.filter(function(idx) {
-          context = this;
-          if (options.matchOn) context = $(this).find(options.matchOn);
-          return filter.call(context, pattern, idx);
-        });
-        state.misses = this.not(state.hits);
-        if (highlight) {
-          context = state.hits;
-          if (options.matchOn) context = state.hits.find(options.matchOn);
-          highlightText(context, pattern, highlightClass);
-        }
-      } else {
-        state.hits = $();
-        state.misses = $();
-      }
-      if (effect) return effect.on.call(this, state.hits, state.misses);
-    }
-  };
-  Filters = {
-    text: function(pattern) {
-      return $(this).text().search(new RegExp(pattern, 'ig')) >= 0;
-    }
-  };
   defaultOptions = {
-    effect: 'fade',
-    highlight: true,
-    highlightClass: 'highlight',
     filter: 'text',
-    matchOn: null
+    effect: ['fade', 'highlight'],
+    fadeOpacity: 0.3,
+    highlightClass: 'highlight',
+    filterOn: null
   };
-  DATA_KEY = 'jquery.fn.search';
-  return $.fn.search = function() {
-    var args, command, definedOptions, options, state;
-    definedOptions = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    if (!this.length) return this;
-    if (!(state = this.data(DATA_KEY)) && definedOptions && !$.isPlainObject(definedOptions)) {
-      throw new Error('Commands cannot be used until search has been setup');
+  setupOptions = function(obj, options) {
+    var e, effect, effects, filter, _i, _len;
+    if (options == null) options = {};
+    options = $.extend({}, defaultOptions, options);
+    filter = options.filter;
+    effect = options.effect;
+    if (isString(filter) && Filters[filter]) {
+      filter = Filters[filter];
+    } else if (!isFunction(filter)) {
+      throw new TypeError("" + filter + " is an unsupported filter");
     }
-    if (typeof definedOptions === 'string') {
-      if ((command = Commands[definedOptions])) {
-        command.call.apply(command, [this, state].concat(__slice.call(args)));
+    if (isString(effect = options.effect) && Effects[effect]) {
+      effect = Effects[effect];
+    } else if (isArray(effect)) {
+      effects = [];
+      for (_i = 0, _len = effect.length; _i < _len; _i++) {
+        e = effect[_i];
+        if (isString(e) && Effects[e]) {
+          effects.push(Effects[e]);
+        } else if (!isObject(e)) {
+          throw new TypeError("" + e + " is an unsupported effect");
+        } else {
+          effects.push(e);
+        }
       }
-      return this;
+      effect = {
+        on: function() {
+          var args, e, _j, _len2;
+          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_j = 0, _len2 = effects.length; _j < _len2; _j++) {
+            e = effects[_j];
+            e.on.apply(this, args);
+          }
+        },
+        off: function() {
+          var args, e, _j, _len2;
+          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_j = 0, _len2 = effects.length; _j < _len2; _j++) {
+            e = effects[_j];
+            e.off.apply(this, args);
+          }
+        }
+      };
+    } else if (!isObject(effect)) {
+      throw new TypeError("" + effect + " is an unsupported effect");
     }
-    options = $.extend({}, defaultOptions, definedOptions);
-    if (state) Commands.disable(this, state);
-    return this.data(DATA_KEY, {
-      options: options,
+    return obj.data(CACHE_KEY, {
       hits: $(),
-      misses: $()
+      misses: $(),
+      options: options,
+      filter: filter,
+      effect: effect
     });
+  };
+  performSearch = function(obj, pattern, regexp, cache) {
+    var hits, misses, options;
+    hits = cache.hits;
+    misses = cache.misses;
+    options = cache.options;
+    if (cache.effect && cache.prevPattern) {
+      cache.effect.off.call(obj, hits, misses, cache.prevPattern, cache.prevRegexp, options);
+    }
+    cache.prevPattern = pattern;
+    cache.prevRegexp = regexp;
+    if (pattern) {
+      hits = obj.filter(function(idx) {
+        var context;
+        context = this;
+        if (options.filterOn) context = $(context).find(options.filterOn);
+        return cache.filter.call(context, pattern, regexp, idx);
+      });
+      misses = obj.not(hits);
+      if (cache.effect) {
+        cache.effect.on.call(obj, hits, misses, pattern, regexp, options);
+      }
+    } else {
+      hits = $();
+      misses = $();
+    }
+    cache.hits = hits;
+    return cache.misses = misses;
+  };
+  return $.fn.search = function(pattern, regexp) {
+    var cache;
+    if (isString(pattern) || isArray(pattern)) {
+      if (!(cache = this.data(CACHE_KEY))) setupOptions(this);
+      if (!regexp) {
+        regexp = new RegExp((isString(pattern) ? pattern : pattern.join('|')), 'i');
+      }
+      performSearch(this, pattern, regexp, cache);
+    } else if (pattern && !isObject(pattern)) {
+      throw new TypeError('Options must be null or an object');
+    } else {
+      setupOptions(this, pattern);
+    }
+    return this;
   };
 });

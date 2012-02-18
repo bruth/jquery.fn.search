@@ -24,33 +24,93 @@
         factory(jQuery)
 )(($) ->
 
-    highlightText = (obj, pattern, className='highlight') ->
-        innerHighlight = (node, pattern) ->
-            skip = 0
-            if node.nodeType is 3
-                pos = node.data.search(regex)
-                if pos >= 0 and node.data.length > 0
-                    match = node.data.match(regex)
-                    spanNode = document.createElement('span')
-                    spanNode.className = className
-                    middleBit = node.splitText(pos)
-                    endBit = middleBit.splitText(match[0].length)
-                    middleClone = middleBit.cloneNode(true)
-                    spanNode.appendChild middleClone
-                    middleBit.parentNode.replaceChild spanNode, middleBit
-                    skip = 1
-            else if node.nodeType is 1 and node.childNodes and not /(script|style)/i.test(node.tagName)
-                i = 0
+    CACHE_KEY = 'jquery.fn.search'
 
-                while i < node.childNodes.length
-                    i += innerHighlight(node.childNodes[i], pattern)
-                    i++
-            return skip
+    toString = Object::toString
 
-        regex = (if typeof pattern is 'string' then new RegExp(pattern, 'i') else pattern)
+    # Consistent names..
+    isArray = $.isArray
+    isFunction = $.isFunction
+    isObject = (obj) -> obj is Object(obj)
+    isRegExp = (obj) -> toString.call(obj) is '[object RegExp]'
+    isString = (obj) -> toString.call(obj) is '[object String]'
 
+    Filters =
+        text: (pattern, regexp) ->
+            $(this).text().search(regexp) >= 0
+
+    Effects =
+        highlight:
+            on: (hits, misses, pattern, regexp, options) ->
+                if pattern
+                    context = hits
+                    if options.filterOn
+                        context = hits.find options.filterOn
+                    if isArray(pattern)
+                        for p in pattern
+                            highlightText context, p, options.highlightClass
+                    else
+                        highlightText context, pattern, options.highlightClass
+
+            off: (hits, misses, pattern, regexp, options) ->
+                if pattern
+                    context = hits
+                    if options.filterOn
+                        context = hits.find options.filterOn
+                    removeHighlight context, options.highlightClass
+
+        fade:
+            on: (hits, misses, pattern, regexp, options) ->
+                misses.css opacity: options.fadeOpacity
+                # Ensure hiding the misses don't result in shadowing any hits
+                rootElement = @parent()
+                hits.each (index) ->
+                    $(@).parentsUntil(rootElement).css opacity: 1
+
+            off: ->
+                @css opacity: 1
+
+        hide:
+            on: (hits, misses) ->
+                misses.hide()
+                # Ensure hiding the misses don't result in shadowing any hits
+                rootElement = @parent()
+                hits.each (index) ->
+                    $(@).parentsUntil(rootElement).show()
+
+            off: ->
+                @show()
+
+    # Performs the actual work of slice up text nodes and replacing
+    # them with span elements
+    innerHighlight = (node, pattern, regexp, className) ->
+        skip = 0
+        if node.nodeType is 3
+            pos = node.data.search(regexp)
+            if pos >= 0 and node.data.length > 0
+                match = node.data.match(regexp)
+                spanNode = document.createElement('span')
+                spanNode.className = className
+                middleBit = node.splitText(pos)
+                endBit = middleBit.splitText(match[0].length)
+                middleClone = middleBit.cloneNode(true)
+                spanNode.appendChild middleClone
+                middleBit.parentNode.replaceChild spanNode, middleBit
+                skip = 1
+        else if node.nodeType is 1 and node.childNodes and not /(script|style)/i.test(node.tagName)
+            i = 0
+
+            while i < node.childNodes.length
+                i += innerHighlight(node.childNodes[i], pattern, regexp, className)
+                i++
+        return skip
+
+
+    # For highlight effect..
+    highlightText = (obj, pattern, className) ->
+        regexp = new RegExp(pattern, 'i')
         obj.each ->
-            innerHighlight @, pattern
+            innerHighlight @, pattern, regexp, className
 
 
     removeHighlight = (obj, className) ->
@@ -61,141 +121,111 @@
         ).end()
 
 
-    # Default effects
-    Effects =
-        fade:
-            on: (hits, misses, pattern) ->
-                misses.css opacity: 0.3
-
-            off: (hits, misses) ->
-                @css opacity: 1
-
-
-        hide:
-            on: (hits, misses, pattern) ->
-                misses.hide()
-
-            off: (hits, misses) ->
-                @show()
-
-    Commands =
-        effect: (state, effect) ->
-            $.extend Effects, effect
-
-        enable: (state) ->
-            if not state.enabled
-                highlight state.hits
-                state.enabled = true
-
-        disable: (state) ->
-            if state.enabled
-                removeHighlight state.hits
-                state.enabled = false
-
-        search: (state, pattern) ->
-            options = state.options
-
-            if typeof (filter = options.filter) is 'string'
-                filter = Filters[filter]
-
-
-            # No effects by default..
-            effect = null
-            highlight = options.highlight
-            highlightClass = options.highlightClass
-
-            # Single effect
-            if typeof (key = options.effect) is 'string'
-                effect = Effects[key]
-
-            # Array of effects
-            else if typeof $.isArray(key)
-                effect =
-                    on: (args...) ->
-                        for e in key
-                            Effects[e].on args...
-                        return
-
-                    off: (args...) ->
-                        for e in key
-                            Effects[e].off args...
-                        return
-
-            # Custom object with `on` and `off` methods
-            else if typeof key is 'object'
-                effect = key
-
-            # Turn off previous effects
-            if effect then effect.off.call @, state.hits, state.misses
-
-            # Remove highlighting is enabled
-            if highlight
-                context = state.hits
-                if options.matchOn
-                    context = state.hits.find options.matchOn
-                removeHighlight context, highlightClass
-
-            # Do attempt to match nothing..
-            if pattern
-                # Lightly wrap the filter, so pattern is available in the filter
-                # function
-                state.hits = @filter (idx) ->
-                    context = @
-                    if options.matchOn
-                        context = $(@).find options.matchOn
-                    filter.call context, pattern, idx
-
-                state.misses = @not state.hits
-
-                # Add highlighting if enabled
-                if highlight
-                    context = state.hits
-                    if options.matchOn
-                        context = state.hits.find options.matchOn
-                    highlightText context, pattern, highlightClass
-            else
-                state.hits = $()
-                state.misses = $()
-
-            # Turn on effects for new results
-            if effect then effect.on.call @, state.hits, state.misses
-
-
-    Filters =
-        text: (pattern) ->
-            $(this).text().search(new RegExp(pattern, 'ig')) >= 0
-
-
     defaultOptions =
-        effect: 'fade' # fade, hide, [], <object>
-        highlight: true
+        filter: 'text'
+        effect: ['fade', 'highlight']
+        fadeOpacity: 0.3
         highlightClass: 'highlight'
-        filter: 'text' # text, function
-        matchOn: null
+        filterOn: null
 
-    DATA_KEY = 'jquery.fn.search'
 
-    # The selected group represents the full sets of elements to search
-    $.fn.search = (definedOptions, args...) ->
-        # Nothing to do..
-        if not @length then return @
+    setupOptions = (obj, options={}) ->
+        options = $.extend {}, defaultOptions, options
 
-        # Ensure the search has been setup
-        if not (state = @data DATA_KEY) and definedOptions and not $.isPlainObject(definedOptions)
-            throw new Error('Commands cannot be used until search has been setup')
+        filter = options.filter
+        effect = options.effect
 
-        # Check for a command
-        if typeof(definedOptions) is 'string'
-            if (command = Commands[definedOptions])
-                command.call @, state, args...
-            return @
-       
-        options = $.extend {}, defaultOptions, definedOptions
+        # Built-in filter
+        if isString(filter) and Filters[filter]
+            filter = Filters[filter]
+        # Custom object with `on` and `off` methods
+        else if not isFunction(filter)
+            throw new TypeError("#{filter} is an unsupported filter")
 
-        # If this already has state, disable it
-        if state then Commands.disable @, state
-        @data DATA_KEY,
-            options: options
+        # Built-in effect
+        if isString(effect = options.effect) and Effects[effect]
+            effect = Effects[effect]
+        # Array of effects
+        else if isArray(effect)
+            effects = []
+            for e in effect
+                if isString(e) and Effects[e]
+                    effects.push Effects[e]
+                else if not isObject(e)
+                    throw new TypeError("#{e} is an unsupported effect")
+                else
+                    effects.push(e)
+
+            effect =
+                on: (args...) ->
+                    e.on.apply(@, args) for e in effects
+                    return
+
+                off: (args...) ->
+                    e.off.apply(@, args) for e in effects
+                    return
+        # Custom object with `on` and `off` methods
+        else if not isObject(effect)
+            throw new TypeError("#{effect} is an unsupported effect")
+
+        # Cache the current state
+        obj.data CACHE_KEY,
             hits: $()
             misses: $()
+            options: options
+            filter: filter
+            effect: effect
+
+
+    performSearch = (obj, pattern, regexp, cache) ->
+        hits = cache.hits
+        misses = cache.misses
+        options = cache.options
+
+        # Turn off previous effects
+        if cache.effect and cache.prevPattern
+            cache.effect.off.call obj, hits, misses, cache.prevPattern, cache.prevRegexp, options
+
+        # Now that the effect has been turned off, update cache of the, now,
+        # previous pattern
+        cache.prevPattern = pattern
+        cache.prevRegexp = regexp
+
+        # Do not attempt to match nothing if nothing
+        if pattern
+            # Lightly wrap the filter, so pattern is available in the filter
+            # function
+            hits = obj.filter (idx) ->
+                context = @
+                if options.filterOn
+                    context = $(context).find options.filterOn
+                cache.filter.call context, pattern, regexp, idx
+
+            misses = obj.not hits
+            # Turn on effects for new results
+            if cache.effect
+                cache.effect.on.call obj, hits, misses, pattern, regexp, options
+        else
+            hits = $()
+            misses = $()
+
+        # Update cache with new hits and misses
+        cache.hits = hits
+        cache.misses = misses
+
+
+    # The extension
+    $.fn.search = (pattern, regexp) ->
+        if isString(pattern) or isArray(pattern)
+            # Ensure the options has been setup
+            if not (cache = @data CACHE_KEY) then setupOptions @
+            if not regexp
+                regexp = new RegExp((if isString(pattern) then pattern else pattern.join('|')), 'i')
+            performSearch @, pattern, regexp, cache
+        else if pattern and not isObject(pattern)
+            throw new TypeError('Options must be null or an object')
+        else
+            setupOptions @, pattern
+        return @
+
 )

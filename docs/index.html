@@ -38,6 +38,13 @@
                 <li><a href=#download>Download</a>
                 <li><a href=#umd>UMD</a>
              </ul>
+            <h3><a href=#api>API</a></h3>
+            <ul>
+                <li><a href=#signatures>Method Signatures</a>
+                <li><a href=#options>Options</a>
+                <li><a href=#filters>Filters</a>
+                <li><a href=#effects>Effects</a>
+             </ul>
         </nav>
 
         <div id=content class=container-fluid>
@@ -49,48 +56,49 @@
                 </hgroup>
             </header>
 
-            <hr>
-
             <section>
-                <h2>WAT! <small>(that's what all the cool kids say)</small></h2>
+                <h2 id=wat>WAT! <small>(that's what all the cool kids say)</small></h2>
 
-                <p>Google make search easy and <em>fast</em>. That gets me to the web page
-                of interest, but now I have to scan the whole page to find what I was
-                <em>really</em> looking for.</p>
-                <p>What would be really great is if I could find what I was looking for
-                quickly use a in-page search (not unlike what <code>cmd+f</code> provides).
-                But not just text, I want to find relevant images, sections of text, documents
-                or whatever.</p>
+                <div class=row>
+                    <div class=span12>
+                        <p>Google make search easy and <em>fast</em>. That gets me to the web page
+                        of interest, but now I have to scan the whole page to find what I was
+                        <em>really</em> looking for.</p>
+                        <p>What would be really great is if I could find what I was looking for
+                        quickly use a in-page search (not unlike what <code>cmd+f</code> provides).
+                        But not just text, I want to find relevant images, sections of text, documents
+                        or whatever.</p>
 
-                <p>I talking about metadata. Metadata exists as text nodes, attribute data,
-                URLs and <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/microdata.html>microdata</a>.
-                This plugin allows for taking advantage of common sources of metadata.</p>
+                        <p>I talking about metadata. Metadata exists as text nodes, attribute data,
+                        URLs and <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/microdata.html>microdata</a>.
+                        This plugin allows for taking advantage of common sources of metadata.</p>
 
-                <hr>
+                    </div>
+                </div>
             </section>
 
             <section>
                 <h2 id=get-started>Get Started</h2>
 
                 <div class=row>
-                    <div class=span10>
+                    <div class=span12>
                     </div>
                 </div>
 
-                <h3 id=dependencies>Dependencies</h3>
 
                 <div class=row>
-                    <div class=span10>
+                    <div class=span12>
+                        <h3 id=dependencies>Dependencies</h3>
                         <ul>
-                            <li><a href=http://jquery.com>jQuery 1.2.3+</a>
+                            <li><a href=http://jquery.com>jQuery 1.6+</a>
                         </ul>
                     </div>
                 </div>
 
-                <h3 id=download>Download</h3>
 
                 <div class=row>
-                    <div class=span10>
+                    <div class=span12>
+                        <h3 id=download>Download</h3>
 
                         <div class="alert alert-block">
                             <h4 class=alert-heading>No Official Release Yet!</h4>
@@ -99,26 +107,197 @@
 
                         <p><em>Right-click and save-as</em></p>
                         <ul>
-                            <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.js>Development Version (0.1)</a> - 5.8K
-                            <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.min.js>Production Version (0.1)</a> - 1.2K minified, gzipped
+                            <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.js>Development Version (0.1)</a> - 7.3K
+                            <li><a href=https://raw.github.com/bruth/jquery.fn.search/master/jquery.fn.search.min.js>Production Version (0.1)</a> - 1.4K minified, gzipped
                         </ul>
 
                     </div>
                 </div>
 
-                <h3 id=umd>Universal Module Definition (UMD)</h3>
 
                 <div class=row>
-                    <div class=span10>
+                    <div class=span12>
+                        <h3 id=umd>Universal Module Definition (UMD)</h3>
                         <p>This plugin supports the <a href=https://github.com/umdjs/umd>UMD</a>. It
                         can load in the CommonJS/Node environment, via AMD in the browser or as
                         a traditional script.</p>
                     </div>
                 </div>
-
-                <hr>
             </section>
 
+            <section>
+                <h2 id=api>API</h2>
+
+                <div class=row>
+                    <div class=span4>
+                        <h3 id=signatures>Method Signatures</h3>
+                        <ul>
+                            <li><code>$.fn.search([options])</code> - An options object may
+                            be passed as the first argument to customize the search behavior.
+                            <li><code>$.fn.search(pattern)</code> - To perform a search, a
+                            string or regexp can be passed. A regexp is used under the hood,
+                            so for more control over the search, pass in a regexp. If this is
+                            the first call to, the default options will be used.
+                        </ul>
+                    </div>
+
+                    <div class=span8>
+<pre class="prettyprint linenums">
+// Default
+$('p').search();
+
+// Hide non-matched sections and filter by their h2
+$('section').search({
+    effect: 'hide',
+    filterOn: 'h2'
+});
+</pre>
+                    </div>
+                </div>
+
+                <div class=row>
+                    <div class=span4>
+                        <h3 id=options>Options</h3>
+                        <ul>
+                            <li><code>filter</code> - The filter mechnaism to use when finding
+                            matches. See more <a href=#filters>below</a>
+                            <li><code>filterOn</code> - An optional selector that will be used
+                            to filter on (it will be used within the context of the matched set
+                            of elements). See more <a href=#filters>below</a>
+                            <li><code>effect</code> - The effect to use on the matched
+                            elements or unmatched elements. See more <a href=#effects>below</a>
+                        </ul>
+                    </div>
+
+                    <div class=span8>
+<pre class="prettyprint linenums">
+// Default
+$('p').search();
+
+// Hide non-matched sections and filter by their h2
+$('section').search({
+    effect: 'hide',
+    filterOn: 'h2'
+});
+</pre>
+                    </div>
+                </div>
+
+                <div class=row>
+                    <div class=span4>
+                        <h3 id=filters>Filters</h3>
+                        <p>A <strong>filter</strong> is simply a function used by
+                        jQuery's <a href=http://api.jquery.com/filter/>$(..).filter()</a>
+                        method to reduce the set of matched elements. The one minor
+                        difference is that the <code>pattern</code> is passed in as the
+                        first argument to the filter function.</p>
+
+                         <div class="alert alert-info">
+                            <strong class=alert-heading>Note:</strong>
+                            Filters are <em>inclusive</em>. Note that each filter applies
+                            to the whole set of elements to start and the result is the
+                            <em>union</em> of those elements. This allows for adding
+                            filters that match with various independent techniques.
+                        </div>
+
+                       <p>The <code>filter</code> option can take a string (built-in),
+                        an function (custom), or an array of either.</p>
+
+                        <p>The <code>filterOn</code> option can be defined with a selector
+                        to apply the filters to these elements, but have the effects applied
+                        the original set. Use the search on this page to see this in effect.
+                        Each documented section is filter based on the inner text, but the
+                        whole section is hidden if there is no match.</p>
+
+                        <h4>Built-in Filters</h4>
+
+                        <ul>
+                            <li><code>text</code> - performs a literal pattern match
+                            with all inner text (using <code>$(..).text()</code>).
+                        </ul>
+                    </div>
+
+                    <div class=span8>
+<pre class="prettyprint linenums">
+// Already the default
+$('p').search({
+    filter: 'text'
+});
+
+// Use a custom function for images.. there is no inner text to
+// search, so we rely on attribute metadata
+$('img').search({
+    filter: function(pattern, index) {
+        // get the contents of the data-search attribute on the element
+        var keywords = $(this).data('search'),
+            regexp = new RegExp(pattern, 'ig');
+        // case insensitive match on the search keywords
+        return meta &amp;&amp; meta.search(regexp) &gt;= 0;
+    }
+});
+</pre>
+                    </div>
+                </div>
+
+
+                <div class=row>
+                    <div class=span4>
+                        <h3 id=effects>Effects</h3>
+
+                        <p>After filtering occurs, there are two sets of elements: hits 
+                        and misses. To visually make this result useful, effects can be
+                        applied to either set to differentiate itself from the other. This
+                        could be highlighting the hits or greying out the misses.</p>
+
+                        <p>An effect is an object with two functions <code>on</code> and
+                        <code>off</code> that takes <code>pattern</code>, <code>hits</code>,
+                        <code>misses</code>, and <code>options</code> as arguments. The
+                        <code>options</code> object is the original object passed in during
+                        initialization.</p>
+
+                        <p>The <code>effect</code> option can take a string (built-in),
+                        an object (custom), or an array of either.</p>
+
+                        <h4>Built-in Effects</h4>
+
+                        <ul>
+                            <li><code>fade</code> - Reduces the opacity of the <code>misses</code>
+                            relative to the <code>fadeOpacity</code> option. This is a default
+                            effect with and opacity of 0.3.
+                            <li><code>hide</code> - Instantly hides the <code>misses</code>
+                            <li><code>highlight</code> - Wraps any text matched by the
+                            <code>pattern</code> with a <code>span</code> element and class
+                            secified by the <code>highlightClass</code> option. This is a default
+                            effect with a class name "highlight".
+                        </ul>
+                    </div>
+
+                    <div class=span8>
+<pre class="prettyprint linenums">
+var myEffect = {
+    on: function(pattern, hits, misses, options) {
+        // turn on the effect
+    },
+
+    off: function(pattern, hits, misses, options) {
+        // turn off the effect
+    }
+};
+
+// Already the default
+$('p').search({
+    effect: ['fade', 'highlight'],
+    fadeOpacity: 0.5
+});
+
+// Use a custom effect
+$('section').search({
+    effect: myEffect
+});
+</pre>
+                    </div>
+                </div>
+            </section>
 
         </div>
 
@@ -130,16 +309,42 @@
         <script>
 
             $(function() {
-
                 var search = $('#main-search'),
-                    sections = $('#content > section').search({
-                        effect: 'hide',
-                        matchOn: '> *'
+                    sections = $('#content .row, #content > section h2').search({
+                        effect: ['highlight', {
+                            on: function(hits, misses) {
+                                // Hide all misses and their corresponding section (this
+                                // might be overridden below).
+                                misses.each(function(index) {
+                                    $(this).hide().parentsUntil('#content', 'section').hide();
+                                });
+
+                                hits.each(function(idx) {
+                                    var e = $(this);
+                                    // If the header matched, show the section rows
+                                    if (e.is('h2')) {
+                                        e.siblings('.row').show();
+
+                                    // If a .row, then show the h2 =).. there must be an option
+                                    // I can used for this.. e.g. dependents?
+                                    } else {
+                                        e.parentsUntil('#content').find('h2').show();
+                                    }
+
+                                    // Don't get shadowed..
+                                    var parents = e.parentsUntil('#content').show();
+                                });
+                            },
+                            off: function(hits, misses) {
+                                // Ensure everything up the tree is unhidden
+                                this.show().parentsUntil('#content').show();
+                            }
+                        }]
                     });
 
                 search.on('keyup', function() {
-                    sections.search('search', search.val());
-                }).keyup();
+                    sections.search(search.val());
+                });
             });
 
         </script>

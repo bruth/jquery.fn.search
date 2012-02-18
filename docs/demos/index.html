@@ -41,7 +41,6 @@
         </div>
 
         <div class=container-fluid>
-
             <div id=demo1 class=demo>
                 <h3>Text Node Pattern Matching</h3>
                 <iframe style="width: 100%; height: 420px" src="http://jsfiddle.net/bruth/77QEK/embedded/result,js,html/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
@@ -63,12 +62,12 @@
                 var search = $('#main-search'),
                     demos = $('.demo').search({
                         effect: 'hide',
-                        matchOn: 'h3'
+                        filterOn: 'h3'
                     });
 
                 search.on('keyup', function() {
-                    demos.search('search', search.val());
-                }).trigger('keyup');
+                    demos.search(search.val());
+                });
             });
         </script>
     </body>
