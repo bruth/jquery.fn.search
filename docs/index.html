@@ -136,8 +136,8 @@
                             be passed as the first argument to customize the search behavior.
                             <li><code>$.fn.search(pattern)</code> - To perform a search, a
                             string or regexp can be passed. A regexp is used under the hood,
-                            so for more control over the search, pass in a regexp. If this is
-                            the first call to, the default options will be used.
+                            so for more control over the search, pass in a regexp as the second
+                            parameter.
                         </ul>
                     </div>
 
@@ -200,8 +200,8 @@ $('section').search({
                             filters that match with various independent techniques.
                         </div>
 
-                       <p>The <code>filter</code> option can take a string (built-in),
-                        an function (custom), or an array of either.</p>
+                       <p>The <code>filter</code> option can take a string (built-in) or
+                        a function (custom).</p>
 
                         <p>The <code>filterOn</code> option can be defined with a selector
                         to apply the filters to these elements, but have the effects applied
@@ -274,11 +274,11 @@ $('img').search({
                     <div class=span8>
 <pre class="prettyprint linenums">
 var myEffect = {
-    on: function(pattern, hits, misses, options) {
+    on: function(hits, misses, pattern, regexp, options) {
         // turn on the effect
     },
 
-    off: function(pattern, hits, misses, options) {
+    off: function(hits, misses, pattern, regexp, options) {
         // turn off the effect
     }
 };
